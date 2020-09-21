@@ -69,8 +69,6 @@ Saved/*
 # Compiled source files for the engine to use
 src/DM/Intermediate/
 src/DM/Saved/
-
-*/Intermediate/*
 Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
