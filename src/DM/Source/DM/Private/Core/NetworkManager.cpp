@@ -32,7 +32,6 @@ UNetworkManager::~UNetworkManager()
 	}
 }
 
-
 void UNetworkManager::Init( UDMGameInstance* NewGameInstance )
 {
 	if ( NewGameInstance == nullptr )
@@ -91,11 +90,40 @@ void UNetworkManager::CreateSession( FString ServerName, bool IsPrivate )
 
 void UNetworkManager::FindSessions()
 {
+	if ( CurrentSessionInterface.IsValid() )
+	{
+		SessionSearch = MakeShareable( new FOnlineSessionSearch() );
+		if ( SessionSearch.IsValid() )
+		{
+			UE_LOG( LogTemp, Warning, TEXT( "Searching for sessions" ) );
+			CurrentSessionInterface->FindSessions( 0, SessionSearch.ToSharedRef() );
+		}
+	}
 }
 
 
 void UNetworkManager::JoinSession( uint32 Index )
 {
+	if ( !CurrentSessionInterface.IsValid() )
+	{
+		return;
+	}
+
+	if ( !SessionSearch.IsValid() )
+	{
+		return;
+	}
+
+	if ( !SessionSearch->SearchResults.IsValidIndex( Index ) )
+	{
+		DM_LOG( "Cannot Join a session of an invalid index." )
+			return;
+	}
+
+	FOnlineSessionSearchResult SessionToJoin = SessionSearch->SearchResults[Index];
+
+	CurrentSessionInterface->JoinSession( 0, SESSION_NAME, SessionToJoin );
+	DM_LOG( "Join session started" );
 }
 
 
@@ -114,16 +142,68 @@ void UNetworkManager::OnSessionCreated( FName SessionName, bool Success )
 
 void UNetworkManager::OnSessionDestroyed( FName SessionName, bool Success )
 {
+	if ( Success )
+	{
+		CreateSession( SESSION_NAME );
+		UE_LOG( LogTemp, Warning, TEXT( "Session Destroyed Sucessfully" ) );
+	}
+	else
+	{
+		UE_LOG( LogTemp, Warning, TEXT( "Session Failed To Be Destroyed" ) );
+	}
 }
 
 
 void UNetworkManager::OnSessionFound( bool Success )
 {
+	if ( Success )
+	{
+		TArray<FOnlineSessionSearchResult> FoundSessions = SessionSearch->SearchResults;
+		if ( FoundSessions.Num() > 0 )
+		{
+			UE_LOG( LogTemp, Warning, TEXT( "Sessions Found" ) );
+			for ( const FOnlineSessionSearchResult& FoundSession : FoundSessions )
+			{
+				UE_LOG( LogTemp, Warning, TEXT( "Session Found: %s" ), *FoundSession.GetSessionIdStr() );
+				UE_LOG( LogTemp, Warning, TEXT( "Session Ping: %i Milliseconds" ), FoundSession.PingInMs );
+			}
+
+			JoinSession( 0 );
+		}
+		else
+		{
+			UE_LOG( LogTemp, Warning, TEXT( "Sessions Not Found" ) );
+		}
+	}
+	else
+	{
+		UE_LOG( LogTemp, Warning, TEXT( "Sessions Not Found" ) );
+		// start an offline game. 
+	}
 }
 
 
 void UNetworkManager::OnJoinSessionComplete( FName SessionName, EOnJoinSessionCompleteResult::Type Result )
 {
+	if ( !CurrentSessionInterface.IsValid() )
+	{
+		return;
+	}
+
+	FString Address;
+	if ( !CurrentSessionInterface->GetResolvedConnectString( SessionName, Address ) ) {
+		UE_LOG( LogTemp, Warning, TEXT( "Could not get connect string." ) );
+		return;
+	}
+
+	//APlayerController* PlayerController = GetFirstLocalPlayerController();
+	//if ( !ensure( PlayerController != nullptr ) )
+	//{
+	//	return;
+	//}
+
+	//PlayerController->ClientTravel( Address, ETravelType::TRAVEL_Absolute );
+	//LOG( "Join session complete" );
 }
 
 

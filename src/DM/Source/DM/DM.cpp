@@ -1,4 +1,9 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+/*
+* @Author: Aaron Hines
+* @CopyRight: Aaron Hines
+* @Description: Contains common headers and macros used across the project.
+*/
+
 
 #include "DM.h"
 #include "Modules/ModuleManager.h"
