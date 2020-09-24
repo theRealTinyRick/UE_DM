@@ -5,6 +5,9 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "EffectTrigger.h"
+#include "EffectAction.h"
+
 #include "Effect.generated.h"
 
 class UEffectAction;
@@ -24,10 +27,12 @@ struct FEffect
 	TSubclassOf<UEffectAction> EffectAction;
 };
 
+USTRUCT()
 struct FEffectInstance
 {
 	GENERATED_USTRUCT_BODY()
 
+	FEffectInstance(){}
 	FEffectInstance( FEffect Effect )
 	{
 		for ( auto& Trigger : Effect.Triggers )
@@ -45,9 +50,9 @@ struct FEffectInstance
 		}
 	}
 
-	UPROPERTY( BlueprintReadOnly, EditAnywhere, Category = "Effect" )
+	UPROPERTY()
 	TArray<UEffectTrigger*> Triggers;
 
-	UPROPERTY( BlueprintReadOnly, EditAnywhere, Category = "Effect" )
+	UPROPERTY()
 	UEffectAction* EffectAction;
 };
