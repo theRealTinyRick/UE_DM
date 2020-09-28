@@ -24,10 +24,13 @@ struct FEffect
 	TSubclassOf<UEffectAction> EffectAction;
 };
 
+
+USTRUCT( BlueprintType )
 struct FEffectInstance
 {
 	GENERATED_USTRUCT_BODY()
 
+	FEffectInstance();
 	FEffectInstance( FEffect Effect )
 	{
 		for ( auto& Trigger : Effect.Triggers )
