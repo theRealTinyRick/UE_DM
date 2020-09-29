@@ -5,6 +5,9 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "EffectTrigger.h"
+#include "EffectAction.h"
+
 #include "Effect.generated.h"
 
 class UEffectAction;
@@ -30,7 +33,7 @@ struct FEffectInstance
 {
 	GENERATED_USTRUCT_BODY()
 
-	FEffectInstance();
+	FEffectInstance() {}
 	FEffectInstance( FEffect Effect )
 	{
 		for ( auto& Trigger : Effect.Triggers )
