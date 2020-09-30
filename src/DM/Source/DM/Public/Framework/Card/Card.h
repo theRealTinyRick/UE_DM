@@ -9,6 +9,7 @@
 #include "Card.generated.h"
 
 class URace;
+class UDuelist;
 class UTexture2D;
 
 /**
@@ -24,6 +25,7 @@ public:
 	~UCard();
 
 private:
+	UDuelist* Owner;
 	FString CardName;
 	TArray<TEnumAsByte<ECivilization>> Civilizations;
 	TEnumAsByte<ECardType> CardType;
@@ -33,10 +35,14 @@ private:
 	bool bIsBlocker;
 	bool bIsShieldTrigger;
 	TArray<FEffect> Effects;
+	TArray<TSubclassOf<UEffectAction>> SpellEffects;
 	UMaterial* CardMaterial;
 
 
 protected:
+	UPROPERTY( BlueprintReadOnly )
+	UDuelist* OverrideOwner;
+
 	UPROPERTY( BlueprintReadOnly )
 	FString OverrideCardName;
 
@@ -63,16 +69,20 @@ protected:
 
 	UPROPERTY( BlueprintReadOnly )
 	TArray<FEffect> OverrideEffects;
-
+	
+	UPROPERTY( BlueprintReadOnly )
+	TArray<TSubclassOf<UEffectAction>> OverrideSpellEffects;
+	
 	UPROPERTY( BlueprintReadOnly )
 	UMaterial* OverrideCardMaterial;
 
 	bool bIsInitialized = false;
 
 public:
-	void Initialize( UCardIdentity* CardIdentity );
+	void Initialize( UCardIdentity* CardIdentity, UDuelist* NewOwner);
 	
 	UFUNCTION( BlueprintCallable )
 	void ResetCard();
 
+	//TODOS: Write all the getters
 };

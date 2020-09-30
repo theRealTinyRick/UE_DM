@@ -87,5 +87,9 @@ public:
 	FORCEINLINE TEnumAsByte<ECardType> GetCardType() { return CardType; }
 	FORCEINLINE int GetManaCost() { return ManaCost; }
 	FORCEINLINE int GetPower() { return Power; }
+	FORCEINLINE bool GetIsBlocker() { return bIsBlocker; }
+	FORCEINLINE bool GetIsShieldTrigger() { return bIsShieldTrigger; }
+	FORCEINLINE TArray<FEffect> GetEffects() { return Effects; }
+	FORCEINLINE TArray<TSubclassOf<UEffectAction>> GetSpellEffects() { return SpellEffects; }
 
 };

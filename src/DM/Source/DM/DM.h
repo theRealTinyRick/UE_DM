@@ -27,3 +27,8 @@ DECLARE_LOG_CATEGORY_EXTERN( DuelMastersLog, Log, All );
 #pragma region CONSTANTS
 #define NUMBER_OF_PLAYERS 2
 #pragma endregion
+
+#pragma region OBJECTS
+#define NEW_OBJECT(T, C) NewObject<T>( (UObject*)GetTransientPackage(), C )
+#pragma endregion
+
