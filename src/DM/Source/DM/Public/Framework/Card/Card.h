@@ -24,20 +24,35 @@ public:
 	UCard();
 	~UCard();
 
-private:
+protected:
+	UPROPERTY()
 	UDuelist* Owner;
+	
+	UPROPERTY()
 	FString CardName;
+	
+	UPROPERTY()
 	TArray<TEnumAsByte<ECivilization>> Civilizations;
+	
+	UPROPERTY()
 	TEnumAsByte<ECardType> CardType;
-	int ManaCost;
+	
+	UPROPERTY()
 	TArray<URace*> Races;
+	
+	UPROPERTY()
+	TArray<FEffect> Effects;
+	
+	UPROPERTY()
+	TArray<TSubclassOf<UEffectAction>> SpellEffects;
+	
+	UPROPERTY()
+	UMaterial* CardMaterial;
+
+	int ManaCost;
 	int Power;
 	bool bIsBlocker;
 	bool bIsShieldTrigger;
-	TArray<FEffect> Effects;
-	TArray<TSubclassOf<UEffectAction>> SpellEffects;
-	UMaterial* CardMaterial;
-
 
 protected:
 	UPROPERTY( BlueprintReadOnly )
@@ -73,9 +88,6 @@ protected:
 	UPROPERTY( BlueprintReadOnly )
 	TArray<TSubclassOf<UEffectAction>> OverrideSpellEffects;
 	
-	UPROPERTY( BlueprintReadOnly )
-	UMaterial* OverrideCardMaterial;
-
 	bool bIsInitialized = false;
 
 public:
@@ -84,5 +96,19 @@ public:
 	UFUNCTION( BlueprintCallable )
 	void ResetCard();
 
-	//TODOS: Write all the getters
+public:
+	FORCEINLINE UDuelist* GetCardOwner() { return OverrideOwner; }
+	FORCEINLINE FString GetCardName() { return OverrideCardName; }
+	FORCEINLINE TArray<TEnumAsByte<ECivilization>> GetCivilizations() { return OverrideCivilizations; }
+	FORCEINLINE TEnumAsByte<ECardType> GetCardType() { return OverrideCardType; }
+	FORCEINLINE int GetManaCost() { return OverrideManaCost; }
+	FORCEINLINE TArray<URace*> GetRaces() { return OverrideRaces; }
+	FORCEINLINE int GetPower() { return OverridePower; }
+	FORCEINLINE bool GetIsBlocker() { return bOverrideIsBlocker; }
+	FORCEINLINE bool GetIsShieldTrigger() { return bOverrideIsShieldTrigger; }
+	FORCEINLINE TArray<FEffect> GetEffects() { return OverrideEffects; }
+	FORCEINLINE TArray<TSubclassOf<UEffectAction>> GetSpellEffects() { return OverrideSpellEffects; }
+	FORCEINLINE UMaterial* GetCardMaterial() { return CardMaterial; }
+	FORCEINLINE bool GetIsInitialized() { return bIsInitialized; }
+
 };
