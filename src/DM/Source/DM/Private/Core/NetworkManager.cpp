@@ -65,12 +65,14 @@ void UNetworkManager::Host( bool IsPrivate )
 	if ( CurrentSessionInterface.IsValid() )
 	{
 		//LEAVING THIS COMMENTED CODE HERE FOR REFERENCE - MAY NEED TO DESTROY A SESSION BEFORE JOINING
-
-		/*FNamedOnlineSession* SessionToDestroy = CurrentSessionInterface->GetNamedSession( FName( SESSION_NAME ) );
+#if WITH_EDITOR
+		FNamedOnlineSession* SessionToDestroy = CurrentSessionInterface->GetNamedSession( FName( SESSION_NAME ) );
 		if ( SessionToDestroy != nullptr && SessionToDestroy->bHosting )
 		{
 			CurrentSessionInterface->DestroySession( SESSION_NAME );
-		}*/
+		}
+		else
+#endif // WITH_EDITOR
 		CreateSession( SESSION_NAME, IsPrivate );
 	}
 }
@@ -125,7 +127,6 @@ void UNetworkManager::JoinSession( int Index )
 	}
 
 	FOnlineSessionSearchResult SessionToJoin = SessionSearch->SearchResults[Index];
-	SessionToJoin.Session.SessionInfo->
 
 	CurrentSessionInterface->JoinSession( 0, SESSION_NAME, SessionToJoin );
 	DM_SCREENLOG( "Join session started", LOG_TIME );
@@ -164,6 +165,8 @@ void UNetworkManager::OnSessionFound( bool Success )
 	if ( Success )
 	{
 		TArray<FOnlineSessionSearchResult> FoundSessions = SessionSearch->SearchResults;
+		SessionsFoundEvent.Broadcast();
+
 		if ( FoundSessions.Num() > 0 )
 		{
 			DM_SCREENLOG("Sessions Found", LOG_TIME );
@@ -220,6 +223,8 @@ void UNetworkManager::OnJoinSessionComplete( FName SessionName, EOnJoinSessionCo
 	{
 		DM_SCREENLOG( FString("Connect String: ").Append(Address), LOG_TIME );
 	}
+
+	SessionJoinedCompleteEvent.Broadcast(Address);
 	
 	/*APlayerController* PlayerController = GEngine->GetFirstLocalPlayerController(GetWord());
 	if ( !ensure( PlayerController != nullptr ) )
