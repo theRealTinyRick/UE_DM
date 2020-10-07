@@ -31,11 +31,9 @@ public:
     UNetworkManager();
     ~UNetworkManager();
 
-
 public:
     UPROPERTY( BlueprintAssignable )
     FNetworkDelegateNoArgs StartedHostingEvent;
-
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -47,17 +45,24 @@ protected:
 	IOnlineSessionPtr CurrentSessionInterface;
     TSharedPtr<FOnlineSessionSearch> SessionSearch;
 
-
 private:
     static UNetworkManager* NetworkManagerInstance;
 
-
 public:
+    UFUNCTION(BlueprintCallable)
     virtual void Init( UDMGameInstance* NewGameInstance );
+   
+    UFUNCTION(BlueprintCallable)
     virtual void Host( bool IsPrivate = false );
+   
+    UFUNCTION(BlueprintCallable)
     virtual void CreateSession( FString ServerName, bool IsPrivate = false );
+   
+    UFUNCTION(BlueprintCallable)
     virtual void FindSessions();
-    virtual void JoinSession( uint32 Index );
+   
+    UFUNCTION(BlueprintCallable)
+    virtual void JoinSession( int Index );
 
     virtual void OnSessionCreated( FName SessionName, bool Success );
     virtual void OnSessionDestroyed( FName SessionName, bool Success );

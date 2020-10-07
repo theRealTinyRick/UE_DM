@@ -5,10 +5,14 @@
 
 #include <Core/NetworkManager.h>
 #include <DMGameInstance.h>
+#include <Engine/Engine.h>
+#include <Engine/World.h>
 
 
 #define SESSION_NAME "TestSession"
 #define SERVER_NAME_SETTINGS_KEY TEXT( "ServerName" )
+
+const float LOG_TIME = 100;
 
 #pragma region STATIC_IMPLEMENTATIONS
 UNetworkManager* UNetworkManager::NetworkManagerInstance = nullptr;
@@ -60,15 +64,14 @@ void UNetworkManager::Host( bool IsPrivate )
 {
 	if ( CurrentSessionInterface.IsValid() )
 	{
-		FNamedOnlineSession* SessionToDestroy = CurrentSessionInterface->GetNamedSession( FName( SESSION_NAME ) );
+		//LEAVING THIS COMMENTED CODE HERE FOR REFERENCE - MAY NEED TO DESTROY A SESSION BEFORE JOINING
+
+		/*FNamedOnlineSession* SessionToDestroy = CurrentSessionInterface->GetNamedSession( FName( SESSION_NAME ) );
 		if ( SessionToDestroy != nullptr && SessionToDestroy->bHosting )
 		{
 			CurrentSessionInterface->DestroySession( SESSION_NAME );
-		}
-		else
-		{
-			CreateSession( SESSION_NAME, IsPrivate );
-		}
+		}*/
+		CreateSession( SESSION_NAME, IsPrivate );
 	}
 }
 
@@ -95,14 +98,15 @@ void UNetworkManager::FindSessions()
 		SessionSearch = MakeShareable( new FOnlineSessionSearch() );
 		if ( SessionSearch.IsValid() )
 		{
-			UE_LOG( LogTemp, Warning, TEXT( "Searching for sessions" ) );
+			DM_SCREENLOG( "Searching for sessions", LOG_TIME );
+			SessionSearch->bIsLanQuery = true;
 			CurrentSessionInterface->FindSessions( 0, SessionSearch.ToSharedRef() );
 		}
 	}
 }
 
 
-void UNetworkManager::JoinSession( uint32 Index )
+void UNetworkManager::JoinSession( int Index )
 {
 	if ( !CurrentSessionInterface.IsValid() )
 	{
@@ -116,14 +120,15 @@ void UNetworkManager::JoinSession( uint32 Index )
 
 	if ( !SessionSearch->SearchResults.IsValidIndex( Index ) )
 	{
-		DM_LOG( "Cannot Join a session of an invalid index." )
-			return;
+		DM_SCREENLOG( "Cannot Join a session of an invalid index.", LOG_TIME );
+		return;
 	}
 
 	FOnlineSessionSearchResult SessionToJoin = SessionSearch->SearchResults[Index];
+	SessionToJoin.Session.SessionInfo->
 
 	CurrentSessionInterface->JoinSession( 0, SESSION_NAME, SessionToJoin );
-	DM_LOG( "Join session started" );
+	DM_SCREENLOG( "Join session started", LOG_TIME );
 }
 
 
@@ -132,10 +137,11 @@ void UNetworkManager::OnSessionCreated( FName SessionName, bool Success )
 	if ( Success )
 	{
 		StartedHostingEvent.Broadcast();
+		DM_SCREENLOG( "[UNetworkManager]: Created Session Success.", LOG_TIME );
 	}
 	else
 	{
-		DM_ERROR( "[UNetworkManager]: Cannot host. Session failed to be created." );
+		DM_SCREENLOG( "[UNetworkManager]: Cannot host. Session failed to be created.", LOG_TIME );
 	}
 }
 
@@ -144,12 +150,11 @@ void UNetworkManager::OnSessionDestroyed( FName SessionName, bool Success )
 {
 	if ( Success )
 	{
-		CreateSession( SESSION_NAME );
-		UE_LOG( LogTemp, Warning, TEXT( "Session Destroyed Sucessfully" ) );
+		DM_SCREENLOG(  "Session Destroyed Sucessfully", LOG_TIME );
 	}
 	else
 	{
-		UE_LOG( LogTemp, Warning, TEXT( "Session Failed To Be Destroyed" ) );
+		DM_SCREENLOG(  "Session Failed To Be Destroyed", LOG_TIME );
 	}
 }
 
@@ -161,23 +166,26 @@ void UNetworkManager::OnSessionFound( bool Success )
 		TArray<FOnlineSessionSearchResult> FoundSessions = SessionSearch->SearchResults;
 		if ( FoundSessions.Num() > 0 )
 		{
-			UE_LOG( LogTemp, Warning, TEXT( "Sessions Found" ) );
+			DM_SCREENLOG("Sessions Found", LOG_TIME );
 			for ( const FOnlineSessionSearchResult& FoundSession : FoundSessions )
 			{
-				UE_LOG( LogTemp, Warning, TEXT( "Session Found: %s" ), *FoundSession.GetSessionIdStr() );
-				UE_LOG( LogTemp, Warning, TEXT( "Session Ping: %i Milliseconds" ), FoundSession.PingInMs );
+				auto Message = FString::Printf( TEXT( "Session Found: %s" ), *FoundSession.GetSessionIdStr() );
+				DM_SCREENLOG( Message, LOG_TIME );
+				
+				Message = FString::Printf( TEXT( "Session Ping: %i Milliseconds" ), FoundSession.PingInMs );
+				DM_SCREENLOG( Message, LOG_TIME );
 			}
 
 			JoinSession( 0 );
 		}
 		else
 		{
-			UE_LOG( LogTemp, Warning, TEXT( "Sessions Not Found" ) );
+			DM_SCREENLOG( "Sessions Not Found, none in the array", LOG_TIME );
 		}
 	}
 	else
 	{
-		UE_LOG( LogTemp, Warning, TEXT( "Sessions Not Found" ) );
+		DM_SCREENLOG( "Sessions Not Found, failed", LOG_TIME );
 		// start an offline game. 
 	}
 }
@@ -190,17 +198,34 @@ void UNetworkManager::OnJoinSessionComplete( FName SessionName, EOnJoinSessionCo
 		return;
 	}
 
-	FString Address;
-	if ( !CurrentSessionInterface->GetResolvedConnectString( SessionName, Address ) ) {
-		UE_LOG( LogTemp, Warning, TEXT( "Could not get connect string." ) );
-		return;
+	DM_SCREENLOG( "Join session Completed", 10 );
+	if(Result ==  EOnJoinSessionCompleteResult::Success)
+	{
+		DM_SCREENLOG( "Join session Completed Sucess", LOG_TIME );
+	}
+	else 
+	{
+
+		DM_SCREENLOG( "Join session Completed NOT Sucess", LOG_TIME );
 	}
 
-	//APlayerController* PlayerController = GetFirstLocalPlayerController();
-	//if ( !ensure( PlayerController != nullptr ) )
-	//{
-	//	return;
-	//}
+
+	FString Address;
+	if ( !CurrentSessionInterface->GetResolvedConnectString( SessionName, Address ) ) 
+	{
+		DM_SCREENLOG("Could not get connect string.", LOG_TIME );
+		return;
+	}
+	else
+	{
+		DM_SCREENLOG( FString("Connect String: ").Append(Address), LOG_TIME );
+	}
+	
+	/*APlayerController* PlayerController = GEngine->GetFirstLocalPlayerController(GetWord());
+	if ( !ensure( PlayerController != nullptr ) )
+	{
+		return;
+	}*/
 
 	//PlayerController->ClientTravel( Address, ETravelType::TRAVEL_Absolute );
 	//LOG( "Join session complete" );

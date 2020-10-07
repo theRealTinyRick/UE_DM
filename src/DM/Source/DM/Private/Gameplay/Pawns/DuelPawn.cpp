@@ -35,19 +35,22 @@ void ADuelPawn::TriggerRPC()
 
 void ADuelPawn::ClientRPCFunction_Implementation()
 {
-	DM_LOG( "RPC Called" );
+	DM_SCREENLOG( "RPC Called", 10 );
 	if(IsLocallyControlled())
 	{
-		DM_LOG( "Is Locally Controlled" );
-	}
-
-	if ( GetLocalRole() == ROLE_Authority )
-	{
-		DM_LOG( "Is Authority" );
+		DM_SCREENLOG( "Is Locally Controlled", 10 );
 	}
 	else
 	{
-		DM_LOG( "Is Authority" );
+		DM_SCREENERROR( "Is NOT Locally Controlled", 10 );
+	}
+	if ( GetLocalRole() == ROLE_Authority )
+	{
+		DM_SCREENLOG( "Is Authority", 10 );
+	}
+	else
+	{
+		DM_SCREENERROR( "Is NOT Authority", 10 );
 	}
 }
 
