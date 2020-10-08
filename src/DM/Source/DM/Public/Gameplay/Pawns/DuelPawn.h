@@ -20,9 +20,14 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
+	
 	UFUNCTION( BlueprintCallable )
-	void TriggerRPC();
+	void TriggerRPC_Server();
 
-	UFUNCTION( Client, Reliable )
-	void ClientRPCFunction();
+	UFUNCTION( Server, Reliable )
+	void ServerRPCFunction();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPCFunction();
+
 };
