@@ -4,16 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "NetworkLibrary.generated.h"
+#include "UtilityStatics.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DM_API UNetworkLibrary : public UBlueprintFunctionLibrary
+class DM_API UUtilityStatics : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+	
 public:
-	UNetworkLibrary();
+	UFUNCTION(BlueprintPure)
+	static bool IsEditor();
 
 };

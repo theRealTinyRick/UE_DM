@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "DuelPawn.generated.h"
 
+class ADMGameState;
+
 UCLASS()
 class DM_API ADuelPawn : public APawn
 {
@@ -14,20 +16,28 @@ class DM_API ADuelPawn : public APawn
 public:
 	ADuelPawn();
 
+public:
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	int PlayerNumber = 0;
+
+protected:
+	UPROPERTY(BlueprintReadOnly)
+	ADMGameState* GameState;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
+#pragma region Event Callbacks
+	UFUNCTION()
+	void OnGameStart();
 	
-	UFUNCTION( BlueprintCallable )
-	void TriggerRPC_Server();
+	UFUNCTION()
+	void OnGameEnd();
+#pragma endregion
 
-	UFUNCTION( Server, Reliable )
-	void ServerRPCFunction();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastRPCFunction();
+public: 
+	FORCEINLINE ADMGameState* GetGameState() { return GameState; }
 
 };

@@ -12,7 +12,7 @@
 #define SESSION_NAME "TestSession"
 #define SERVER_NAME_SETTINGS_KEY TEXT( "ServerName" )
 
-const float LOG_TIME = 100;
+const float LOG_TIME = 0;
 
 #pragma region STATIC_IMPLEMENTATIONS
 UNetworkManager* UNetworkManager::NetworkManagerInstance = nullptr;
@@ -60,20 +60,21 @@ void UNetworkManager::Init( UDMGameInstance* NewGameInstance )
 }
 
 
+bool PendingSessionCreation = false;
 void UNetworkManager::Host( bool IsPrivate )
 {
 	if ( CurrentSessionInterface.IsValid() )
 	{
-		//LEAVING THIS COMMENTED CODE HERE FOR REFERENCE - MAY NEED TO DESTROY A SESSION BEFORE JOINING
-#if WITH_EDITOR
 		FNamedOnlineSession* SessionToDestroy = CurrentSessionInterface->GetNamedSession( FName( SESSION_NAME ) );
-		if ( SessionToDestroy != nullptr && SessionToDestroy->bHosting )
+		if ( SessionToDestroy != nullptr )
 		{
+			PendingSessionCreation = true;
 			CurrentSessionInterface->DestroySession( SESSION_NAME );
 		}
 		else
-#endif // WITH_EDITOR
-		CreateSession( SESSION_NAME, IsPrivate );
+		{
+			CreateSession( SESSION_NAME, IsPrivate );
+		}
 	}
 }
 
@@ -151,11 +152,16 @@ void UNetworkManager::OnSessionDestroyed( FName SessionName, bool Success )
 {
 	if ( Success )
 	{
-		DM_SCREENLOG(  "Session Destroyed Sucessfully", LOG_TIME );
+		DM_SCREENLOG( "Session Destroyed Sucessfully", LOG_TIME );
+		if(PendingSessionCreation)
+		{
+			PendingSessionCreation = false;
+			CreateSession( SESSION_NAME, false );
+		}
 	}
 	else
 	{
-		DM_SCREENLOG(  "Session Failed To Be Destroyed", LOG_TIME );
+		DM_SCREENLOG( "Session Failed To Be Destroyed", LOG_TIME );
 	}
 }
 
@@ -165,11 +171,11 @@ void UNetworkManager::OnSessionFound( bool Success )
 	if ( Success )
 	{
 		TArray<FOnlineSessionSearchResult> FoundSessions = SessionSearch->SearchResults;
-		SessionsFoundEvent.Broadcast();
 
 		if ( FoundSessions.Num() > 0 )
 		{
-			DM_SCREENLOG("Sessions Found", LOG_TIME );
+			SessionsFoundEvent.Broadcast();
+			/*DM_SCREENLOG("Sessions Found", LOG_TIME );
 			for ( const FOnlineSessionSearchResult& FoundSession : FoundSessions )
 			{
 				auto Message = FString::Printf( TEXT( "Session Found: %s" ), *FoundSession.GetSessionIdStr() );
@@ -177,13 +183,12 @@ void UNetworkManager::OnSessionFound( bool Success )
 				
 				Message = FString::Printf( TEXT( "Session Ping: %i Milliseconds" ), FoundSession.PingInMs );
 				DM_SCREENLOG( Message, LOG_TIME );
-			}
-
-			JoinSession( 0 );
+			}*/
 		}
 		else
 		{
 			DM_SCREENLOG( "Sessions Not Found, none in the array", LOG_TIME );
+			FailedToFindSessionsEvent.Broadcast();
 		}
 	}
 	else
@@ -225,15 +230,6 @@ void UNetworkManager::OnJoinSessionComplete( FName SessionName, EOnJoinSessionCo
 	}
 
 	SessionJoinedCompleteEvent.Broadcast(Address);
-	
-	/*APlayerController* PlayerController = GEngine->GetFirstLocalPlayerController(GetWord());
-	if ( !ensure( PlayerController != nullptr ) )
-	{
-		return;
-	}*/
-
-	//PlayerController->ClientTravel( Address, ETravelType::TRAVEL_Absolute );
-	//LOG( "Join session complete" );
 }
 
 

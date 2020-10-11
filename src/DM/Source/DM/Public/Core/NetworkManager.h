@@ -17,59 +17,6 @@
 
 class UDMGameInstance;
 
-//
-//USTRUCT(BlueprintType)
-//struct FOnlineSessionSearchImplementation
-//{
-//    GENERATED_USTRUCT_BODY()
-//    FOnlineSessionSearchImplementation(){}
-//    FOnlineSessionSearchImplementation( FOnlineSessionSearch SearchResult ):
-//        SearchResults(SearchResult.SearchResults),
-//        SearchState(SearchResult.SearchState),
-//        MaxSearchResults(SearchResult.MaxSearchResults),
-//        QuerySettings(SearchResult.QuerySettings),
-//        bIsLanQuery(SearchResult.bIsLanQuery),
-//        PingBucketSize(SearchResult.PingBucketSize),
-//        PlatformHash(SearchResult.PlatformHash),
-//        TimeoutInSeconds(SearchResult.TimeoutInSeconds)
-//    {
-//    }
-//
-//    /** Array of all sessions found when searching for the given criteria */
-//    TArray<FOnlineSessionSearchResult> SearchResults;
-//    
-//    /** State of the search */
-//    UPROPERTY(BlueprintReadOnly)
-//    EOnlineAsyncTaskState::Type SearchState;
-//    
-//    /** Max number of queries returned by the matchmaking service */
-//    UPROPERTY(BlueprintReadOnly)
-//    int32 MaxSearchResults;
-//    
-//    /** The query to use for finding matching servers */
-//    UPROPERTY(BlueprintReadOnly)
-//    FOnlineSearchSettings QuerySettings;
-//    
-//    /** Whether the query is intended for LAN matches or not */
-//    UPROPERTY(BlueprintReadOnly)
-//    bool bIsLanQuery;
-//    
-//    /**
-//     * Used to sort games into buckets since a the difference in terms of feel for ping
-//     * in the same bucket is often not a useful comparison and skill is better
-//     */
-//    UPROPERTY(BlueprintReadOnly)
-//    int32 PingBucketSize;
-//    
-//    /** Search hash used by the online subsystem to disambiguate search queries, stamped every time FindSession is called */
-//    UPROPERTY(BlueprintReadOnly)
-//    int32 PlatformHash;
-//    
-//    /** Amount of time to wait for the search results. May not apply to all platforms. */
-//    UPROPERTY(BlueprintReadOnly)
-//    float TimeoutInSeconds;
-//};
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FNetworkDelegateNoArgs );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FNetworkDelegateStringArg, FString, String );
 
@@ -91,6 +38,9 @@ public:
     
     UPROPERTY( BlueprintAssignable )
     FNetworkDelegateNoArgs SessionsFoundEvent;
+    
+    UPROPERTY( BlueprintAssignable )
+    FNetworkDelegateNoArgs FailedToFindSessionsEvent;
     
     UPROPERTY( BlueprintAssignable )
     FNetworkDelegateStringArg SessionJoinedCompleteEvent;
@@ -129,11 +79,8 @@ public:
     virtual void OnSessionFound( bool Success );
     virtual void OnJoinSessionComplete( FName SessionName, EOnJoinSessionCompleteResult::Type Result );
 
-
-
-
 public:
-    UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintPure)
     static UNetworkManager* GetNetworkManagerInstance();
 
     FORCEINLINE bool GetHasInitialized() { return bHasInitialized; }

@@ -26,6 +26,8 @@ DECLARE_LOG_CATEGORY_EXTERN( DuelMastersLog, Log, All );
 
 #pragma region CONSTANTS
 #define NUMBER_OF_PLAYERS 2
+#define REMOTE_TAG "Remote"
+#define LOCAL_TAG "Local"
 #pragma endregion
 
 #pragma region OBJECTS

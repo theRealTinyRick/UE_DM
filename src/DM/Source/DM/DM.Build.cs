@@ -15,8 +15,9 @@ public class DM : ModuleRules
 			"CoreUObject", 
 			"Engine", 
 			"InputCore",
-            "OnLineSubsystem",
-            "OnlineSubsystemSteam"
+            "OnlineSubsystem",
+            "OnlineSubsystemSteam",
+
 		});
 
         PublicDependencyModuleNames.AddRange(new string[]
