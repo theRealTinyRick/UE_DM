@@ -6,6 +6,7 @@
 #include <Gameplay/GameState/DMGameState.h>
 #include <Gameplay/Actors/ActionManager.h>
 #include <Gameplay/Pawns/DuelPawn.h>
+#include <Gameplay/Controller/BasePlayerController.h>
 
 void ADMGameModeBase::HandlePlayerStart( APlayerController* PlayerController )
 {
@@ -14,8 +15,23 @@ void ADMGameModeBase::HandlePlayerStart( APlayerController* PlayerController )
 		return;
 	}
 	PlayerController->bShowMouseCursor = true;
+	bool bIsServer = PlayerController->IsLocalController();
 	
-	AActor* PlayerStart = FindPlayerStart( PlayerController, PlayerController->IsLocalController() ? LOCAL_TAG : REMOTE_TAG );
+	ABasePlayerController* BasePlayerController = Cast<ABasePlayerController>( PlayerController );
+	if(BasePlayerController != nullptr)
+	{
+		BasePlayerController->ClientReadyEvent.AddDynamic( this, &ADMGameModeBase::StartGame );
+		if(bIsServer)
+		{
+			BasePlayerController->SetIsServer();
+		}
+		else
+		{
+			BasePlayerController->SetIsClient();
+		}
+	}
+
+	AActor* PlayerStart = FindPlayerStart( PlayerController, bIsServer ? LOCAL_TAG : REMOTE_TAG );
 	if(PlayerStart == nullptr)
 	{
 		DM_SCREENERROR( "Cannot spawn Pawn. No player Start found.", 10 );
@@ -35,13 +51,15 @@ void ADMGameModeBase::HandlePlayerStart( APlayerController* PlayerController )
 			PlayerController->Possess( NewPawn );
 			ADuelPawn* DuelPawn = Cast<ADuelPawn>( NewPawn );
 
-			if(PlayerController->IsLocalController())
+			if(bIsServer)
 			{
 				PlayerOne = DuelPawn != nullptr ? DuelPawn : nullptr;
+				PlayerOneController = BasePlayerController;
 			}
 			else
 			{
 				PlayerTwo = DuelPawn != nullptr ? DuelPawn : nullptr;
+				PlayerTwoController = BasePlayerController;
 			}
 
 			if(PlayerOne != nullptr && PlayerTwo != nullptr)
@@ -61,31 +79,24 @@ void ADMGameModeBase::SpawnActionManager( APlayerController* NewOwner )
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpawnParams.Owner = NewOwner;
 		
-		TSubclassOf<AActionManager> ActionManagerClass = AActionManager::StaticClass();
-		AActionManager* ActionManager = World->SpawnActor<AActionManager>( ActionManagerClass, FVector(0, 0, 0), FRotator(0, 0 , 0), SpawnParams );
-		
-		if(ActionManager != nullptr)
-		{
-			SpawnedActionManager = ActionManager;
-			ActionManager->FinishedPingEvent.AddDynamic( this, &ADMGameModeBase::StartGame );
-			ActionManager->StartClientPing();
-		}
+		AActionManager* ActionManager = World->SpawnActor<AActionManager>( AActionManager::StaticClass(), FVector(0, 0, 0), FRotator(0, 0 , 0), SpawnParams );
+		SpawnedActionManager = ActionManager;
 	}
 }
 
 void ADMGameModeBase::StartGame()
 {
-	 ADMGameState* DMGameState = GetGameState<ADMGameState>();
-	 if(DMGameState == nullptr)
-	 {
-		 DM_SCREENERROR( "[ADMGameModeBase] Cannot start game with out properly setting up the gamestate class.", 10 );
-		 DM_ERROR( "[ADMGameModeBase] Cannot start game with out properly setting up the gamestate class.");
-		 return;
-	 }
+	if ( PlayerOne != nullptr && PlayerTwo != nullptr )
+	{
+		// send RPCs for game start
+		PlayerOneController->OnGameStart();
+		PlayerTwoController->OnGameStart();
 
-	 DMGameState->bIsServer = true;
-	 DMGameState->StartGame();
-
-	PostStartGame();
+		PostStartGame();
+	}
+	else
+	{
+		GetWorldTimerManager().SetTimer( TimerHandle, this, &ADMGameModeBase::StartGame, 1.0f, true );
+	}
 }
 

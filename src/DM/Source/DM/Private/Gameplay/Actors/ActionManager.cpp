@@ -10,17 +10,14 @@ AActionManager::AActionManager()
 {
 	USceneComponent* NewRoot = CreateDefaultSubobject<USceneComponent>( TEXT( "Root Component" ) );
 	SetRootComponent( NewRoot );
+
+	PrimaryActorTick.bCanEverTick = true;
+	SetReplicates( true );
 }
 
 void AActionManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	auto GameState = GetWorld()->GetGameState<ADMGameState>();
-	if ( GameState != nullptr )
-	{
-		GameState->SpawnedActionManager = this;
-	}
 }
 
 void AActionManager::Tick(float DeltaTime)

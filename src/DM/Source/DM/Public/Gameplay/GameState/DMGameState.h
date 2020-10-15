@@ -21,39 +21,9 @@ class DM_API ADMGameState : public AGameStateBase
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintAssignable)
-	FGameStateDel GameStartedEvent;
-	
-	UPROPERTY(BlueprintAssignable)
-	FGameStateDel GameEndedEvent;
-
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsServer = false;
 
-protected:
-	FTimerHandle TimerHandle_DefaultTimer;
-
-public:
-	UPROPERTY( BlueprintReadOnly )
-	AActionManager* SpawnedActionManager;
-
-	UPROPERTY( BlueprintReadOnly )
-	ADuelPawn* PlayerOne;
-
-	UPROPERTY( BlueprintReadOnly )
-	ADuelPawn* PlayerTwo;
-
-public:
 #pragma region RPCs
-	UFUNCTION( Server, Reliable )
-	void NotifyServerReadyToStart();
 #pragma endregion
-
-	UFUNCTION( NetMulticast, Reliable )
-	void StartGame();
-
-	UFUNCTION( NetMulticast, Reliable )
-	void EndGame();
-	
-	void StartGame_Execute();
 };

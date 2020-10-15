@@ -2,10 +2,85 @@
 
 
 #include <Gameplay/Controller/BasePlayerController.h>
+#include "Engine/World.h"
+#include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
+#include <Gameplay/GameState/DMGameState.h>
+#include <Gameplay/Pawns/DuelPawn.h>
+#include <Gameplay/Actors/ActionManager.h>
+
+ABasePlayerController::ABasePlayerController()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
 
 void ABasePlayerController::ReceivedPlayer()
 {
 	Super::ReceivedPlayer();
-
 	OnReceivedPlayer();
 }
+
+void ABasePlayerController::PlayerTick( float DeltaTime )
+{
+	Super::PlayerTick( DeltaTime );
+	if( !bShouldStartReadying )
+	{
+		return;
+	}
+
+	if ( !bHasSentServerReady )
+	{
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass( GetWorld(), AActionManager::StaticClass(), FoundActors );
+		if(FoundActors.Num() == 0)
+		{
+			return;
+		}
+		ActionManager = Cast<AActionManager>( FoundActors[0] );
+
+		ADuelPawn* NewDuelPawn = GetPawn<ADuelPawn>();
+		if ( NewDuelPawn == nullptr )
+		{
+			return;
+		}
+		DuelPawn = NewDuelPawn;
+
+		if(bIsClient)
+		{
+			SendServerReady();
+		}
+		bHasSentServerReady = true;
+	}
+}
+
+void ABasePlayerController::SendServerReady_Implementation()
+{
+	DM_SCREENERROR( "Send Server Ready" , 10 );
+	ClientReadyEvent.Broadcast();
+}
+
+void ABasePlayerController::OnGameStart_Implementation()
+{
+	DM_SCREENERROR(  FString::Printf(TEXT( "On Game Start    %i" ), PlayerNumber) , 10 );
+	GameStartEvent.Broadcast();
+}
+
+void ABasePlayerController::SetIsClient_Implementation()
+{
+	bIsClient = true;
+	bShouldStartReadying = true;
+	PlayerNumber = 2;
+}
+
+void ABasePlayerController::SetIsServer()
+{
+	bIsServer = true;
+	bShouldStartReadying = true;
+	PlayerNumber = 1;
+}
+
+//void ABasePlayerController::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const
+//{
+//	Super::GetLifetimeReplicatedProps( OutLifetimeProps );
+//	//DOREPLIFETIME( ABasePlayerController, PlayerNumber );
+//}

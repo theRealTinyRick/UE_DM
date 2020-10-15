@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Core/PingActor.h"
+#include "GameFramework/Actor.h"
 #include "ActionManager.generated.h"
 
 UCLASS()
-class DM_API AActionManager : public APingActor
+class DM_API AActionManager : public AActor
 {
 	GENERATED_BODY()
 	

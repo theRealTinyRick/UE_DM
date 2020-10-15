@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Engine/EngineTypes.h"
 #include "DMGameModeBase.generated.h"
 
 class AActionManager;
 class ADuelPawn;
+class ABasePlayerController;
 
 /**
  * 
@@ -27,6 +29,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	ADuelPawn* PlayerTwo;
 
+	UPROPERTY(BlueprintReadOnly)
+	ABasePlayerController* PlayerOneController;
+	
+	UPROPERTY(BlueprintReadOnly)
+	ABasePlayerController* PlayerTwoController;
+
+	FTimerHandle TimerHandle;
 
 protected:
 	UFUNCTION(BlueprintCallable, Category="Game Start")
