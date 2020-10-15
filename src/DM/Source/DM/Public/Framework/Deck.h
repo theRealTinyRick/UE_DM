@@ -31,6 +31,9 @@ public:
 	void RemoveAll(UCardIdentity* TargetCard);
 
 	UFUNCTION(BlueprintCallable)
+	TArray<FString> GetDeckData();
+
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE TArray<UCardIdentity*> GetDeck() { return Deck; }
 
 };

@@ -47,15 +47,14 @@ void ABasePlayerController::PlayerTick( float DeltaTime )
 
 		if(bIsClient)
 		{
-			SendServerReady();
+			SendClientReadyToServer();
 		}
 		bHasSentServerReady = true;
 	}
 }
 
-void ABasePlayerController::SendServerReady_Implementation()
+void ABasePlayerController::SendClientReadyToServer_Implementation()
 {
-	DM_SCREENERROR( "Send Server Ready" , 10 );
 	ClientReadyEvent.Broadcast();
 }
 

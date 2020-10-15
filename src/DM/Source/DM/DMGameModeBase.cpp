@@ -18,20 +18,14 @@ void ADMGameModeBase::HandlePlayerStart( APlayerController* PlayerController )
 	bool bIsServer = PlayerController->IsLocalController();
 	
 	ABasePlayerController* BasePlayerController = Cast<ABasePlayerController>( PlayerController );
-	if(BasePlayerController != nullptr)
+	if(BasePlayerController == nullptr)
 	{
-		BasePlayerController->ClientReadyEvent.AddDynamic( this, &ADMGameModeBase::StartGame );
-		if(bIsServer)
-		{
-			BasePlayerController->SetIsServer();
-		}
-		else
-		{
-			BasePlayerController->SetIsClient();
-		}
+		return;
 	}
+	
+	BasePlayerController->ClientReadyEvent.AddDynamic( this, &ADMGameModeBase::StartGame );
 
-	AActor* PlayerStart = FindPlayerStart( PlayerController, bIsServer ? LOCAL_TAG : REMOTE_TAG );
+	AActor* PlayerStart = FindPlayerStart( BasePlayerController, bIsServer ? LOCAL_TAG : REMOTE_TAG );
 	if(PlayerStart == nullptr)
 	{
 		DM_SCREENERROR( "Cannot spawn Pawn. No player Start found.", 10 );
@@ -42,29 +36,31 @@ void ADMGameModeBase::HandlePlayerStart( APlayerController* PlayerController )
 	if(World != nullptr)
 	{
 		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = PlayerController;
+		SpawnParams.Owner = BasePlayerController;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 		APawn* NewPawn = World->SpawnActor<APawn>(DefaultPawnClass, PlayerStart->GetActorLocation(), PlayerStart->GetActorRotation(), SpawnParams );
 		if(NewPawn != nullptr)
 		{
-			PlayerController->Possess( NewPawn );
+			BasePlayerController->Possess( NewPawn );
 			ADuelPawn* DuelPawn = Cast<ADuelPawn>( NewPawn );
 
 			if(bIsServer)
 			{
 				PlayerOne = DuelPawn != nullptr ? DuelPawn : nullptr;
 				PlayerOneController = BasePlayerController;
+				BasePlayerController->SetIsServer();
 			}
 			else
 			{
 				PlayerTwo = DuelPawn != nullptr ? DuelPawn : nullptr;
 				PlayerTwoController = BasePlayerController;
+				BasePlayerController->SetIsClient();
 			}
 
 			if(PlayerOne != nullptr && PlayerTwo != nullptr)
 			{
-				SpawnActionManager(PlayerController);
+				SpawnActionManager(BasePlayerController);
 			}
 		}
 	}
@@ -88,7 +84,6 @@ void ADMGameModeBase::StartGame()
 {
 	if ( PlayerOne != nullptr && PlayerTwo != nullptr )
 	{
-		// send RPCs for game start
 		PlayerOneController->OnGameStart();
 		PlayerTwoController->OnGameStart();
 
@@ -96,7 +91,8 @@ void ADMGameModeBase::StartGame()
 	}
 	else
 	{
-		GetWorldTimerManager().SetTimer( TimerHandle, this, &ADMGameModeBase::StartGame, 1.0f, true );
+		// repeat this function till both players are ready
+		GetWorldTimerManager().SetTimer( TimerHandle, this, &ADMGameModeBase::StartGame, 0.1f, true );
 	}
 }
 

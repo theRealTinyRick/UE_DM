@@ -54,7 +54,7 @@ protected:
 	virtual void PlayerTick( float DeltaTime ) override;
 
 	UFUNCTION(Server, Reliable)
-	void SendServerReady();
+	void SendClientReadyToServer();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnReceivedPlayer();
