@@ -21,7 +21,10 @@ public:
 	~UDuelist();
 
 protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
+	int PlayerNumber = -1;
+	
+	UPROPERTY( BlueprintReadOnly )
 	TMap<TEnumAsByte<ECardLocation>, UCardCollection*> CardCollections;
 
 public:
@@ -31,6 +34,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetDeck(TArray<UCardIdentity*> DeckIdentity);
 
-
+private:
+	friend class ADuelPawn;
 	
 };

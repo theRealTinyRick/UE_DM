@@ -23,6 +23,7 @@ UDuelist::UDuelist()
 	};
 }
 
+
 UDuelist::~UDuelist()
 {
 }
@@ -38,6 +39,7 @@ UCardCollection* UDuelist::GetCollection(TEnumAsByte<ECardLocation> Location)
 	return nullptr;
 }
 
+
 void UDuelist::SetDeck(TArray<UCardIdentity*> DeckIdentity)
 {
 	UCardCollection* Deck = GetCollection(ECardLocation::DECK);
@@ -48,5 +50,8 @@ void UDuelist::SetDeck(TArray<UCardIdentity*> DeckIdentity)
 		UCard* NewCard = NEW_CARD;
 		NewCard->Initialize(CardId, this);
 		Deck->AddCard(NewCard);
+
+		//DM_SCREENLOG( FString::Printf( TEXT( "New Card Created: %s" ), *NewCard->GetCardName() ), 10 );
 	}
+	CardCollections[ECardLocation::DECK] = Deck;
 }

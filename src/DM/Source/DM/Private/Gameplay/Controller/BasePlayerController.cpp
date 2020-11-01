@@ -23,12 +23,8 @@ void ABasePlayerController::ReceivedPlayer()
 void ABasePlayerController::PlayerTick( float DeltaTime )
 {
 	Super::PlayerTick( DeltaTime );
-	if( !bShouldStartReadying )
-	{
-		return;
-	}
 
-	if ( !bHasSentServerReady )
+	if(ActionManager == nullptr)
 	{
 		TArray<AActor*> FoundActors;
 		UGameplayStatics::GetAllActorsOfClass( GetWorld(), AActionManager::StaticClass(), FoundActors );
@@ -37,13 +33,30 @@ void ABasePlayerController::PlayerTick( float DeltaTime )
 			return;
 		}
 		ActionManager = Cast<AActionManager>( FoundActors[0] );
+	}
 
+	if(DuelPawn == nullptr)
+	{
 		ADuelPawn* NewDuelPawn = GetPawn<ADuelPawn>();
 		if ( NewDuelPawn == nullptr )
 		{
 			return;
 		}
 		DuelPawn = NewDuelPawn;
+		DuelPawn->SetPlayerNumber( PlayerNumber );
+	}
+
+	if( !bShouldStartReadying )
+	{
+		return;
+	}
+
+	if ( !bHasSentServerReady )
+	{
+		if(ActionManager == nullptr || DuelPawn == nullptr)
+		{
+			return;
+		}
 
 		if(bIsClient)
 		{

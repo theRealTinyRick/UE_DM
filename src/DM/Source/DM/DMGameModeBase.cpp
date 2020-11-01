@@ -88,11 +88,18 @@ void ADMGameModeBase::StartGame()
 		PlayerTwoController->OnGameStart();
 
 		PostStartGame();
+
+		GetWorldTimerManager().SetTimer( TimerHandle, this, &ADMGameModeBase::SetupGame, GameSetupDelayTime );
 	}
 	else
 	{
 		// repeat this function till both players are ready
 		GetWorldTimerManager().SetTimer( TimerHandle, this, &ADMGameModeBase::StartGame, 0.1f, true );
 	}
+}
+
+void ADMGameModeBase::SetupGame()
+{
+	//implement in sub class
 }
 

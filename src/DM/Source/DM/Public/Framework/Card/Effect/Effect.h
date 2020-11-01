@@ -2,6 +2,7 @@
 * @Author: Aaron Hines
 * @CopyRight: Aaron Hines
 */
+#pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"

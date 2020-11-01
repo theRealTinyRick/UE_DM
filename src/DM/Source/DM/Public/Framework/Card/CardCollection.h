@@ -36,7 +36,7 @@ protected:
 
 public:
 	bool AddCard(UCard* NewCard);
-	bool Remove(UCard* NewCard);
+	bool RemoveCard(UCard* NewCard);
 	bool Empty();
 
 	FORCEINLINE bool Contains(UCard* NewCard) { return NewCard != nullptr && Cards.Contains(NewCard); }

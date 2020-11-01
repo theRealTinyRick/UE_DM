@@ -13,7 +13,7 @@ UCard::~UCard()
 
 void UCard::Initialize( UCardIdentity* CardIdentity, UDuelist* NewOwner)
 {
-	if (Owner == nullptr)
+	if (NewOwner == nullptr)
 	{
 		DM_ERROR("[UCard]: Cannot initialize UCard with a null Owner")
 		return;

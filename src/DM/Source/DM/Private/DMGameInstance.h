@@ -10,6 +10,7 @@
 #include "DMGameInstance.generated.h"
 
 class UNetworkManager;
+class UDeck;
 
 /**
  * Main game instance for the game.
@@ -23,13 +24,21 @@ public:
 	UDMGameInstance();
 
 protected:
+	UPROPERTY( EditAnywhere )
+	TSubclassOf<UDeck> DeckClass;
+
+protected:
 	UPROPERTY()
 	UNetworkManager* NetworkManager;
+
 
 protected:
 	virtual void Init() override;
 
 public:
+	UPROPERTY()
+	UDeck* PlayerChosenDeck;
+
 	UFUNCTION( BlueprintCallable )
 	UNetworkManager* GetNetworkManager() { return NetworkManager; }
 

@@ -12,12 +12,16 @@ class ADuelPawn;
 class ABasePlayerController;
 
 /**
- * 
+ * Game mode that handles connected player controllers and spawning neccisary actors.
  */
 UCLASS()
 class DM_API ADMGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float GameSetupDelayTime = 0.5f;
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -46,9 +50,12 @@ protected:
 	
 	UFUNCTION()
 	void StartGame();	
-
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void PostStartGame();
+
+	UFUNCTION()
+	virtual void SetupGame();	
 
 public:
 	FORCEINLINE AActionManager* GetActionManager() { return SpawnedActionManager; }

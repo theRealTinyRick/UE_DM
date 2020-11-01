@@ -5,10 +5,15 @@
 
 #include "DMGameInstance.h"
 #include <Core/NetworkManager.h>
+#include <Framework/Deck.h>
 
 
 UDMGameInstance::UDMGameInstance()
 {
+	if(DeckClass == nullptr)
+	{
+		DeckClass = UDeck::StaticClass();
+	}
 }
 
 void UDMGameInstance::Init()
@@ -21,4 +26,6 @@ void UDMGameInstance::Init()
 	{
 		NetworkManager->Init( this );
 	}
+
+	PlayerChosenDeck = NEW_OBJECT( UDeck, DeckClass );
 }

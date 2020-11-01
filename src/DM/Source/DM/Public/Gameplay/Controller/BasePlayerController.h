@@ -38,7 +38,7 @@ protected:
 	ADuelPawn* DuelPawn;
 
 	UPROPERTY( BlueprintReadOnly )
-	int PlayerNumber = 0;
+	int PlayerNumber = -1;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsServer = false;
@@ -67,5 +67,8 @@ public:
 	void SetIsClient();
 	
 	void SetIsServer();
+
+public: 
+	FORCEINLINE int GetPlayerNumber() { return PlayerNumber; }
 
 };

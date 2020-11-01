@@ -7,7 +7,7 @@ bool UCardCollection::AddCard(UCard* NewCard)
 {
 	if (NewCard != nullptr)
 	{
-		if (Contains(NewCard))
+		if (!Contains(NewCard))
 		{
 			Cards.Add((NewCard));
 			CardAddedEvent.Broadcast(NewCard);
@@ -17,7 +17,7 @@ bool UCardCollection::AddCard(UCard* NewCard)
 	return false;
 }
 
-bool UCardCollection::Remove(UCard* NewCard)
+bool UCardCollection::RemoveCard(UCard* NewCard)
 {
 	if (NewCard != nullptr)
 	{
