@@ -16,6 +16,7 @@
 #include <Framework/Card/Card.h>
 #include <Framework/Card/CardCollection.h>
 #include <Framework/Card/CardIdentity.h>
+#include <Framework/Card/CardLocation.h>
 #include <Framework/Card/Effect/EffectAction.h>
 #include <Framework/Card/Effect/EffectTrigger.h>
 #include <Framework/Duelist/Duelist.h>

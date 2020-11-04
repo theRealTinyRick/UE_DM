@@ -11,7 +11,8 @@
 void ADuelGameMode::SetupGame()
 {
 	Super::SetupGame();
-	
+	//OnGameSetup();
+
 	if(SpawnedActionManager!= nullptr)
 	{
 		SpawnedActionManager->AddShield( 1, STARTING_HAND_COUNT );

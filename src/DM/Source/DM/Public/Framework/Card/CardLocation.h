@@ -9,6 +9,7 @@
 UENUM(BlueprintType)
 enum ECardLocation 
 {
+	NONE,
 	DECK,
 	HAND,
 	BATTLEZONE,

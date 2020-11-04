@@ -155,6 +155,8 @@ void AActionManager::AddShield_Execute_Implementation( int TargetPlayerNumber, i
 	UCardCollection* Deck = TargetPawn->GetDuelist()->GetCollection( ECardLocation::DECK );
 	UCardCollection* ShieldZone = TargetPawn->GetDuelist()->GetCollection( ECardLocation::SHIELDZONE );
 
+	DM_SCREENERROR( "Adding A Shield", 5 );
+
 	if ( Deck->GetCards().Num() <= 0 )
 	{
 		//TODO: add event to show that cards can't be added
@@ -171,7 +173,8 @@ void AActionManager::AddShield_Execute_Implementation( int TargetPlayerNumber, i
 			{
 				Deck->RemoveCard( Card );
 				ShieldZone->AddCard( Card );
-
+				Card->CurrentLocation = ECardLocation::SHIELDZONE;
+				Card->PreviousLocation = ECardLocation::DECK;
 				ShieldAddedEvent.Broadcast( Card, TargetPawn->GetDuelist() );
 			}
 		}
@@ -197,6 +200,8 @@ void AActionManager::Draw_Execute_Implementation( int TargetPlayerNumber, int Am
 	UCardCollection* Deck = TargetPawn->GetDuelist()->GetCollection( ECardLocation::DECK );
 	UCardCollection* Hand = TargetPawn->GetDuelist()->GetCollection( ECardLocation::HAND );
 
+	DM_SCREENERROR( "Drawing a card", 5 );
+	
 	if(Deck->GetCards().Num() <= 0)
 	{
 		//TODO: add event to show that cards can't be drawn
@@ -213,6 +218,8 @@ void AActionManager::Draw_Execute_Implementation( int TargetPlayerNumber, int Am
 			{
 				Deck->RemoveCard( Card );
 				Hand->AddCard( Card );
+				Card->CurrentLocation = ECardLocation::HAND;
+				Card->PreviousLocation = ECardLocation::DECK;
 
 				CardDrawnEvent.Broadcast(Card, TargetPawn->GetDuelist());
 			}

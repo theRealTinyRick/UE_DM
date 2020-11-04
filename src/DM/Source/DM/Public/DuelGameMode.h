@@ -16,4 +16,7 @@ class DM_API ADuelGameMode : public ADMGameModeBase
 	
 protected:
 	virtual void SetupGame() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnGameSetup();
 };

@@ -23,8 +23,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* CardBackMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float ApproximateCardHeight = 120;
+
 	UPROPERTY(BlueprintReadonly)
 	UCard* Card;
+
+	UPROPERTY(BlueprintReadonly)
+	ADuelPawn* DuelPawnOwner;
+
 
 public:	
 	FORCEINLINE UCard* GetCard() { return Card; }
@@ -33,8 +40,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void SetCard( UCard* CardToSet );
+	void SetCard( UCard* CardToSet, ADuelPawn* NewDuelPawnOwner );
 
 private:
+	FORCEINLINE bool IsEven( int Number ) { return Number % 2 == 0; }
 	friend class ADuelPawn;
 };

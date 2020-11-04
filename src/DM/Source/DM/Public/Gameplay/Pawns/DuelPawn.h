@@ -24,7 +24,22 @@ protected:
 	USceneComponent* MyRoot;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	USceneComponent* CardSpawnPoint;
+	USceneComponent* DeckLocator;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USceneComponent* HandLocator;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USceneComponent* GraveyardLocator;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USceneComponent* BattleZoneLocator;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USceneComponent* ShieldZoneLocator;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USceneComponent* ManaZoneLocator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<ACardActor> CardClass;
@@ -52,6 +67,13 @@ public:
 	FORCEINLINE UDuelist* GetDuelist() { return Duelist; }
 	FORCEINLINE int GetPlayerNumber() { return PlayerNumber; }
 	FORCEINLINE bool GetIsPlayerNumberSet() { return bIsPlayerNumberSet; }
+	FORCEINLINE USceneComponent* GetDeckLocator() { return DeckLocator; }
+	FORCEINLINE USceneComponent* GetHandLocator() { return HandLocator; }
+	FORCEINLINE USceneComponent* GetGraveyardLocator() { return GraveyardLocator; }
+	FORCEINLINE USceneComponent* GetBattleZoneLocator() { return BattleZoneLocator; }
+	FORCEINLINE USceneComponent* GetShieldZoneLocator() { return ShieldZoneLocator; }
+	FORCEINLINE USceneComponent* GetManaZoneLocator() { return ManaZoneLocator; }
+
 #pragma endregion GETTERS
 
 

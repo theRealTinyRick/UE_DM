@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "CardIdentity.h"
+#include <Framework/Card/CardIdentity.h>
+#include <Framework/Card/CardLocation.h>
 
 #include "Card.generated.h"
 
-class URace;
-class UDuelist;
 class UTexture2D;
+class UCardIdentity;
+class UDuelist;
 
 /**
  * 
@@ -26,8 +27,17 @@ public:
 
 protected:
 	UPROPERTY()
+	UCardIdentity* CardId;
+
+	UPROPERTY()
 	UDuelist* Owner;
 	
+	UPROPERTY()
+	TEnumAsByte<ECardLocation> CurrentLocation;
+	
+	UPROPERTY()
+	TEnumAsByte<ECardLocation> PreviousLocation;
+
 	UPROPERTY()
 	FString CardName;
 	
@@ -55,39 +65,6 @@ protected:
 	bool bIsShieldTrigger;
 
 protected:
-	UPROPERTY( BlueprintReadOnly )
-	UDuelist* OverrideOwner;
-
-	UPROPERTY( BlueprintReadOnly )
-	FString OverrideCardName;
-
-	UPROPERTY( BlueprintReadOnly )
-	TArray<TEnumAsByte<ECivilization>> OverrideCivilizations;
-
-	UPROPERTY( BlueprintReadOnly )
-	TEnumAsByte<ECardType> OverrideCardType;
-
-	UPROPERTY( BlueprintReadOnly )
-	int OverrideManaCost;
-
-	UPROPERTY( BlueprintReadOnly )
-	TArray<URace*> OverrideRaces;
-
-	UPROPERTY( BlueprintReadOnly )
-	int OverridePower;
-
-	UPROPERTY( BlueprintReadOnly )
-	bool bOverrideIsBlocker;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-	bool bOverrideIsShieldTrigger;
-
-	UPROPERTY( BlueprintReadOnly )
-	TArray<FEffect> OverrideEffects;
-	
-	UPROPERTY( BlueprintReadOnly )
-	TArray<TSubclassOf<UEffectAction>> OverrideSpellEffects;
-	
 	bool bIsInitialized = false;
 
 public:
@@ -97,18 +74,22 @@ public:
 	void ResetCard();
 
 public:
-	FORCEINLINE UDuelist* GetCardOwner() { return OverrideOwner; }
-	FORCEINLINE FString GetCardName() { return OverrideCardName; }
-	FORCEINLINE TArray<TEnumAsByte<ECivilization>> GetCivilizations() { return OverrideCivilizations; }
-	FORCEINLINE TEnumAsByte<ECardType> GetCardType() { return OverrideCardType; }
-	FORCEINLINE int GetManaCost() { return OverrideManaCost; }
-	FORCEINLINE TArray<URace*> GetRaces() { return OverrideRaces; }
-	FORCEINLINE int GetPower() { return OverridePower; }
-	FORCEINLINE bool GetIsBlocker() { return bOverrideIsBlocker; }
-	FORCEINLINE bool GetIsShieldTrigger() { return bOverrideIsShieldTrigger; }
-	FORCEINLINE TArray<FEffect> GetEffects() { return OverrideEffects; }
-	FORCEINLINE TArray<TSubclassOf<UEffectAction>> GetSpellEffects() { return OverrideSpellEffects; }
+	FORCEINLINE UDuelist* GetCardOwner() { return Owner; }
+	FORCEINLINE TEnumAsByte<ECardLocation> GetCurrentLocation() { return CurrentLocation; }
+	FORCEINLINE FString GetCardName() { return CardName; }
+	FORCEINLINE TArray<TEnumAsByte<ECivilization>> GetCivilizations() { return Civilizations; }
+	FORCEINLINE TEnumAsByte<ECardType> GetCardType() { return CardType; }
+	FORCEINLINE int GetManaCost() { return ManaCost; }
+	FORCEINLINE TArray<URace*> GetRaces() { return Races; }
+	FORCEINLINE int GetPower() { return Power; }
+	FORCEINLINE bool GetIsBlocker() { return bIsBlocker; }
+	FORCEINLINE bool GetIsShieldTrigger() { return bIsShieldTrigger; }
+	FORCEINLINE TArray<FEffect> GetEffects() { return Effects; }
+	FORCEINLINE TArray<TSubclassOf<UEffectAction>> GetSpellEffects() { return SpellEffects; }
 	FORCEINLINE UMaterial* GetCardMaterial() { return CardMaterial; }
 	FORCEINLINE bool GetIsInitialized() { return bIsInitialized; }
 
+
+private:
+	friend class AActionManager;
 };

@@ -5,6 +5,7 @@
 #include <Framework/Card/CardCollection.h>
 #include <Framework/Card/CardIdentity.h>
 #include <Framework/Card/Card.h>
+//TODO: remove includes that are in pch
 
 #define NEW_COLLECTION NEW_OBJECT(UCardCollection, UCardCollection::StaticClass())
 #define NEW_CARD NEW_OBJECT(UCard, UCard::StaticClass())
@@ -13,6 +14,7 @@ UDuelist::UDuelist()
 {
 	CardCollections = TMap<TEnumAsByte<ECardLocation>, UCardCollection*>
 	{
+		{ECardLocation::NONE, NEW_COLLECTION},
 		{ECardLocation::DECK, NEW_COLLECTION},
 		{ECardLocation::HAND, NEW_COLLECTION},
 		{ECardLocation::BATTLEZONE, NEW_COLLECTION},

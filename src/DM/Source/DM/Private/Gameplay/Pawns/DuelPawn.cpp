@@ -7,8 +7,6 @@
 #include "Kismet/GameplayStatics.h"
 
 #include <DMGameInstance.h>
-#include <Framework/Duelist/Duelist.h>
-#include <Framework/Deck.h>
 #include <Gameplay/GameState/DMGameState.h>
 #include <Gameplay/Actors/ActionManager.h>
 #include <Gameplay/Actors/CardActor.h>
@@ -20,10 +18,20 @@ ADuelPawn::ADuelPawn()
 	SetReplicates( true );
 
 	MyRoot = CreateDefaultSubobject<USceneComponent>( TEXT( "Pawn Root" ) );
-	CardSpawnPoint = CreateDefaultSubobject<USceneComponent>( TEXT( "Card Spawn Point" ) );
+	DeckLocator = CreateDefaultSubobject<USceneComponent>( TEXT( "Deck Locator" ) );
+	HandLocator = CreateDefaultSubobject<USceneComponent>( TEXT( "Hand Locator" ) );
+	GraveyardLocator = CreateDefaultSubobject<USceneComponent>( TEXT( "Graveyard Locator" ) );
+	BattleZoneLocator = CreateDefaultSubobject<USceneComponent>( TEXT( "Battle Zone Locator" ) );
+	ShieldZoneLocator = CreateDefaultSubobject<USceneComponent>( TEXT( "Shield Zone Locator" ) );
+	ManaZoneLocator = CreateDefaultSubobject<USceneComponent>( TEXT( "Mana Zone Locator" ) );
 
 	SetRootComponent( MyRoot );
-	CardSpawnPoint->SetupAttachment( RootComponent );
+	DeckLocator->SetupAttachment( RootComponent );
+	HandLocator->SetupAttachment( RootComponent );
+	GraveyardLocator->SetupAttachment( RootComponent );
+	BattleZoneLocator->SetupAttachment( RootComponent );
+	ShieldZoneLocator->SetupAttachment( RootComponent );
+	ManaZoneLocator->SetupAttachment( RootComponent );
 }
 
 void ADuelPawn::BeginPlay()
@@ -79,10 +87,10 @@ void ADuelPawn::OnCardShouldSpawn( UCard* TargetCard, UDuelist* TargetDuelist )
 		SpawnParams.Owner = this;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		ACardActor* NewCardActor = GetWorld()->SpawnActor<ACardActor>( CardClass, CardSpawnPoint != nullptr ? CardSpawnPoint->GetComponentLocation() :  FVector(), CardSpawnPoint != nullptr ? CardSpawnPoint->GetComponentRotation() : FRotator(), SpawnParams );
+		ACardActor* NewCardActor = GetWorld()->SpawnActor<ACardActor>( CardClass, DeckLocator != nullptr ? DeckLocator->GetComponentLocation() :  FVector(), DeckLocator != nullptr ? DeckLocator->GetComponentRotation() : FRotator(), SpawnParams );
 		if(NewCardActor != nullptr)
 		{
-			NewCardActor->SetCard( TargetCard );
+			NewCardActor->SetCard( TargetCard, this );
 		}
 	}
 }
