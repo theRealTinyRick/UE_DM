@@ -35,6 +35,8 @@ protected:
 
 public:	
 	FORCEINLINE UCard* GetCard() { return Card; }
+	FORCEINLINE UStaticMeshComponent* GetCardMesh() { return CardMesh; }
+	FORCEINLINE UStaticMeshComponent* GetCardBackMesh() { return CardBackMesh; }
 
 protected:
 	virtual void BeginPlay() override;

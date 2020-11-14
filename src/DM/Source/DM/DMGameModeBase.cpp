@@ -7,6 +7,7 @@
 #include <Gameplay/Actors/ActionManager.h>
 #include <Gameplay/Pawns/DuelPawn.h>
 #include <Gameplay/Controller/BasePlayerController.h>
+#include "Delegates/DelegateSignatureImpl.inl"
 
 void ADMGameModeBase::HandlePlayerStart( APlayerController* PlayerController )
 {

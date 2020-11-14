@@ -46,6 +46,12 @@ void ABasePlayerController::PlayerTick( float DeltaTime )
 		DuelPawn->SetPlayerNumber( PlayerNumber );
 	}
 
+	DMGameState = GetWorld()->GetGameState<ADMGameState>();
+	if ( DMGameState == nullptr )
+	{
+		return;
+	}
+
 	if( !bShouldStartReadying )
 	{
 		return;
@@ -73,7 +79,7 @@ void ABasePlayerController::SendClientReadyToServer_Implementation()
 
 void ABasePlayerController::OnGameStart_Implementation()
 {
-	DM_SCREENERROR(  FString::Printf(TEXT( "On Game Start    %i" ), PlayerNumber) , 10 );
+	//DM_SCREENERROR(  FString::Printf(TEXT( "On Game Start    %i" ), PlayerNumber) , 100 );
 	GameStartEvent.Broadcast();
 }
 

@@ -40,20 +40,21 @@ void UCard::Initialize( UCardIdentity* CardIdentity, UDuelist* NewOwner )
 	bIsShieldTrigger = CardIdentity->GetIsShieldTrigger();
 	Effects = CardIdentity->GetEffects();
 	SpellEffects = CardIdentity->GetSpellEffects();
+	CardMaterial = CardIdentity->GetCardMaterial();
 
 	bIsInitialized = true;
 }
 
 void UCard::ResetCard()
 {
-	Owner = Owner;
-	CardName = CardName;
-	Civilizations = Civilizations;
-	CardType = CardType;
-	Races = Races;
-	Power = Power;
-	bIsBlocker = bIsBlocker;
-	bIsShieldTrigger = bIsShieldTrigger;
-	Effects = Effects;
-	SpellEffects = SpellEffects;
+	CardName = CardId->GetCardName();
+	Civilizations = CardId->GetCivilizations();
+	CardType = CardId->GetCardType();
+	Races = CardId->GetRaces();
+	Power = CardId->GetPower();
+	bIsBlocker = CardId->GetIsBlocker();
+	bIsShieldTrigger = CardId->GetIsShieldTrigger();
+	Effects = CardId->GetEffects();
+	SpellEffects = CardId->GetSpellEffects();
+	CardMaterial = CardId->GetCardMaterial();
 }

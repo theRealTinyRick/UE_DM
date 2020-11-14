@@ -29,14 +29,11 @@ public:
 	FActionCardDelegate LastCardDrawnEvent;
 	
 protected:
-	UPROPERTY()
 	ADuelPawn* PlayerOne;
 	
 	UPROPERTY()
-
 	ADuelPawn* PlayerTwo;
 	
-
 #pragma region RPC EXAMPLE
 	UFUNCTION( BlueprintCallable, Server, Reliable )
 	void ActionName(const TArray<FString>& Cards);

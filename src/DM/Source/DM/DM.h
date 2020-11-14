@@ -41,6 +41,7 @@ DECLARE_LOG_CATEGORY_EXTERN( DuelMastersLog, Log, All );
 #define NUMBER_OF_PLAYERS 2
 #define REMOTE_TAG "Remote"
 #define LOCAL_TAG "Local"
+#define CARD_TAG "Card"
 #pragma endregion
 
 

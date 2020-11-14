@@ -109,6 +109,7 @@ ADuelPawn* AActionManager::GetPlayerByNumber( int Number )
 
 void AActionManager::ActionName_Implementation( const TArray<FString>& Cards )
 {
+	// setup a queeu
 	ActionName_Execute( Cards );
 }
 
@@ -155,8 +156,6 @@ void AActionManager::AddShield_Execute_Implementation( int TargetPlayerNumber, i
 	UCardCollection* Deck = TargetPawn->GetDuelist()->GetCollection( ECardLocation::DECK );
 	UCardCollection* ShieldZone = TargetPawn->GetDuelist()->GetCollection( ECardLocation::SHIELDZONE );
 
-	DM_SCREENERROR( "Adding A Shield", 5 );
-
 	if ( Deck->GetCards().Num() <= 0 )
 	{
 		//TODO: add event to show that cards can't be added
@@ -200,8 +199,6 @@ void AActionManager::Draw_Execute_Implementation( int TargetPlayerNumber, int Am
 	UCardCollection* Deck = TargetPawn->GetDuelist()->GetCollection( ECardLocation::DECK );
 	UCardCollection* Hand = TargetPawn->GetDuelist()->GetCollection( ECardLocation::HAND );
 
-	DM_SCREENERROR( "Drawing a card", 5 );
-	
 	if(Deck->GetCards().Num() <= 0)
 	{
 		//TODO: add event to show that cards can't be drawn

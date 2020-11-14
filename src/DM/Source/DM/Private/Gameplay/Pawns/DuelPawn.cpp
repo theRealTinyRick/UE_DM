@@ -4,12 +4,15 @@
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/GameState.h"
+#include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 #include <DMGameInstance.h>
 #include <Gameplay/GameState/DMGameState.h>
 #include <Gameplay/Actors/ActionManager.h>
 #include <Gameplay/Actors/CardActor.h>
+#include <Gameplay/GameState/DMGameState.h>
 
 
 ADuelPawn::ADuelPawn()
@@ -42,11 +45,52 @@ void ADuelPawn::BeginPlay()
 void ADuelPawn::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
+
+	//ECC_GameTraceChannel1 -- card
+	//ECC_GameTraceChannel2 -- board
+
+	if ( APlayerController* PC = Cast<APlayerController>( GetController() ) )
+	{
+		FHitResult TraceHitResult_One;
+		FHitResult TraceHitResult_Two;
+		FVector TargetPoint;
+		
+		PC->GetHitResultUnderCursor( ECC_GameTraceChannel1, true, TraceHitResult_One );
+		PC->GetHitResultUnderCursor( ECC_GameTraceChannel2, true, TraceHitResult_Two );
+		DrawDebugSphere( GetWorld(), TraceHitResult_Two.ImpactPoint, 20, 20, FColor::Cyan, false, -1, 0, 1 );
+
+		if(TraceHitResult_One.Actor != nullptr)
+		{
+			ACardActor* CardActor = Cast<ACardActor>( TraceHitResult_One.Actor );
+			if(CardActor != nullptr)
+			{
+				if(CardActor != CurrentHoveredCard)
+				{
+					if(CardActor->GetCardMesh()->GetCollisionObjectType() == ECC_GameTraceChannel2)
+					{
+						DM_SCREENERROR( "Its channel 2", -1 );
+					}
+					if( CardActor->GetCardMesh()->GetCollisionObjectType() == ECC_GameTraceChannel1 )
+					{
+						DM_SCREENERROR( "Its channel 1", -1 );
+					}
+					CardHoveredEvent.Broadcast(CardActor);
+				}
+			}
+			else
+			{
+				CurrentHoveredCard = nullptr;
+			}
+		}
+	}
 }
 
 void ADuelPawn::SetupPlayerInputComponent( UInputComponent* PlayerInputComponent )
 {
 	Super::SetupPlayerInputComponent( PlayerInputComponent );
+
+	PlayerInputComponent->BindAction( "LeftMouse", EInputEvent::IE_Pressed, this, &ADuelPawn::OnClick );
+	PlayerInputComponent->BindAction( "LeftMouse", EInputEvent::IE_Pressed, this, &ADuelPawn::OnRelease );
 }
 
 void ADuelPawn::SetPlayerNumber( int NewPlayerNumber )
@@ -71,6 +115,24 @@ void ADuelPawn::FindActionManager()
 		ActionManager = Cast<AActionManager>( FoundActors[0] );
 		ActionManager->ShieldAddedEvent.AddDynamic( this, &ADuelPawn::OnCardShouldSpawn );
 		ActionManager->CardDrawnEvent.AddDynamic( this, &ADuelPawn::OnCardShouldSpawn );
+	}
+}
+
+void ADuelPawn::OnClick()
+{
+	if(CurrentHoveredCard != nullptr)
+	{
+		CurrentClickedCard = CurrentHoveredCard;
+		CardClickedEvent.Broadcast( CurrentClickedCard );
+	}
+}
+
+void ADuelPawn::OnRelease()
+{
+	if ( CurrentClickedCard != nullptr )
+	{
+		CardReleasedEvent.Broadcast( CurrentClickedCard );
+		CurrentClickedCard = nullptr;
 	}
 }
 

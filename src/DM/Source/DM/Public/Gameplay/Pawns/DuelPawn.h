@@ -10,6 +10,8 @@ class AActionManager;
 class ACardActor;
 class USceneComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FCardActorDelegate, ACardActor*, Card );
+
 UCLASS()
 class DM_API ADuelPawn : public APawn
 {
@@ -18,6 +20,15 @@ class DM_API ADuelPawn : public APawn
 public:
 	ADuelPawn();
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	FCardActorDelegate CardClickedEvent;
+	
+	UPROPERTY(BlueprintAssignable)
+	FCardActorDelegate CardReleasedEvent;
+	
+	UPROPERTY(BlueprintAssignable)
+	FCardActorDelegate CardHoveredEvent;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -47,6 +58,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	int PlayerNumber = -1;
 
+	UPROPERTY(BlueprintReadOnly)
+	ACardActor* CurrentHoveredCard;
+	
+	UPROPERTY(BlueprintReadOnly)
+	ACardActor* CurrentClickedCard;
+
 	UPROPERTY()
 	bool bIsPlayerNumberSet = false;
 
@@ -73,6 +90,8 @@ public:
 	FORCEINLINE USceneComponent* GetBattleZoneLocator() { return BattleZoneLocator; }
 	FORCEINLINE USceneComponent* GetShieldZoneLocator() { return ShieldZoneLocator; }
 	FORCEINLINE USceneComponent* GetManaZoneLocator() { return ManaZoneLocator; }
+	FORCEINLINE ACardActor* GetCurrentHoveredCard() { return CurrentHoveredCard; }
+	FORCEINLINE ACardActor* GetCurrentClickedCard() { return CurrentClickedCard; }
 
 #pragma endregion GETTERS
 
@@ -81,8 +100,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick( float DeltaTime ) override;
 	virtual void SetupPlayerInputComponent( class UInputComponent* PlayerInputComponent ) override;
-	
 	virtual void FindActionManager();
+	virtual void OnClick();
+	virtual void OnRelease();
 
 	UFUNCTION()
 	void OnCardShouldSpawn(UCard* TargetCard, UDuelist* TargetDuelist);

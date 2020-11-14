@@ -82,6 +82,7 @@ protected:
 public:
 	//TODO: Add all getters 
 	FORCEINLINE FString GetCardName() { return CardName; }
+	FORCEINLINE UMaterial* GetCardMaterial() { return CardMaterial; }
 	FORCEINLINE TArray<TEnumAsByte<ECivilization>> GetCivilizations() { return Civilizations; }
 	FORCEINLINE TArray<URace*> GetRaces() { return Races; }
 	FORCEINLINE TEnumAsByte<ECardType> GetCardType() { return CardType; }

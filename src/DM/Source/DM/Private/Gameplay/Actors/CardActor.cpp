@@ -13,6 +13,8 @@ ACardActor::ACardActor()
 
 	CardMesh->SetupAttachment( RootComponent );
 	CardBackMesh->SetupAttachment( RootComponent );
+
+	Tags = { CARD_TAG };
 }
 
 void ACardActor::SetCard( UCard* CardToSet, ADuelPawn* NewDuelPawnOwner )
@@ -20,10 +22,9 @@ void ACardActor::SetCard( UCard* CardToSet, ADuelPawn* NewDuelPawnOwner )
 	DuelPawnOwner = NewDuelPawnOwner;
 
 	Card = CardToSet;
-	if(Card != nullptr)
+	if ( Card != nullptr )
 	{
-		// update card mesh
-		CardMesh->OverrideMaterials = { Card->GetCardMaterial() };
+		CardMesh->SetMaterial( 0, Card->GetCardMaterial() );
 	}
 }
 
@@ -32,16 +33,28 @@ void ACardActor::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ACardActor::Tick(float DeltaTime)
+void ACardActor::Tick( float DeltaTime )
 {
-	Super::Tick(DeltaTime);
+	Super::Tick( DeltaTime );
+
+	if ( Card == nullptr || DuelPawnOwner == nullptr )
+	{
+		return;
+	}
+
 	FVector TargetLocation;
 	FRotator TargetRotation;
-	FVector Right = DuelPawnOwner->GetShieldZoneLocator()->GetRightVector();
+	FVector Right = DuelPawnOwner->GetActorRightVector();
 	ECardLocation CurrentLocation = Card->GetCurrentLocation();
 	TArray<UCard*> Cards = Card->GetCardOwner()->GetCollection( CurrentLocation )->GetCards();
+	int Index = Cards.IndexOfByKey( Card );
+	bool bIsCurrentClickedCard = DuelPawnOwner->GetCurrentClickedCard() == this;
 
-	if(DuelPawnOwner != nullptr && Card != nullptr)
+	if(bIsCurrentClickedCard)
+	{
+		//get current mouse board location
+	}
+	else
 	{
 		// update my location
 		switch ( CurrentLocation )
@@ -50,13 +63,13 @@ void ACardActor::Tick(float DeltaTime)
 			TargetRotation = DuelPawnOwner->GetDeckLocator()->GetComponentRotation();
 			TargetLocation = DuelPawnOwner->GetDeckLocator()->GetComponentLocation();
 			break;
+
 		case ECardLocation::HAND:
 			TargetRotation = DuelPawnOwner->GetHandLocator()->GetComponentRotation();
 			TargetLocation = DuelPawnOwner->GetHandLocator()->GetComponentLocation();
 			if ( Cards.Contains( Card ) )
 			{
-				int Index = Cards.IndexOfByKey( Card );
-				TargetLocation = TargetLocation + ((Right * (IsEven(Index) ? -1 : 1)) * (Index * ApproximateCardHeight));
+				TargetLocation = TargetLocation + (-Right * (Index * (ApproximateCardHeight * 0.9f)));
 			}
 			break;
 
@@ -65,11 +78,10 @@ void ACardActor::Tick(float DeltaTime)
 
 		case ECardLocation::SHIELDZONE:
 			TargetLocation = DuelPawnOwner->GetShieldZoneLocator()->GetComponentLocation();
-			TargetRotation = DuelPawnOwner->GetShieldZoneLocator()->GetComponentRotation(); 
+			TargetRotation = DuelPawnOwner->GetShieldZoneLocator()->GetComponentRotation();
 			if ( Cards.Contains( Card ) )
 			{
-				int Index = Cards.IndexOfByKey(Card);
-				TargetLocation = TargetLocation + (Right * (Index * ApproximateCardHeight));
+				TargetLocation = TargetLocation + (-Right * (Index * ApproximateCardHeight));
 			}
 			break;
 
@@ -81,13 +93,10 @@ void ACardActor::Tick(float DeltaTime)
 			break;
 		case ECardLocation::NONE:
 			return;
-		default:
-			return;
 		}
-		
-
-		SetActorLocation( TargetLocation );
-		SetActorRotation( TargetRotation );
 	}
+
+	SetActorLocation( TargetLocation );
+	SetActorRotation( TargetRotation );
 }
 

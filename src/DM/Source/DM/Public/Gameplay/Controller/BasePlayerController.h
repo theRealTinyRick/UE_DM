@@ -8,6 +8,7 @@
 
 class AActionManager;
 class ADuelPawn;
+class ADMGameState;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FPlayerControllerDel );
 
@@ -36,6 +37,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	ADuelPawn* DuelPawn;
+
+	UPROPERTY(BlueprintReadOnly)
+	ADMGameState* DMGameState;
 
 	UPROPERTY( BlueprintReadOnly )
 	int PlayerNumber = -1;
